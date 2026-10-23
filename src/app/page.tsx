@@ -183,6 +183,7 @@ export default function App() {
   const [isAdminUnlocked, setIsAdminUnlocked] = useState<boolean>(false);
   const [role, setRole] = useState<"admin" | "viewer">("viewer");
   const [showAuthModal, setShowAuthModal] = useState<boolean>(false);
+  const [authModalTarget, setAuthModalTarget] = useState<"admin" | "any">("any");
   const [passwordInput, setPasswordInput] = useState<string>("");
   const [authError, setAuthError] = useState<string>("");
 
@@ -478,7 +479,7 @@ export default function App() {
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    const cleanPwd = passwordInput.trim();
+    const cleanPwd = passwordInput.trim().toLowerCase();
     if (cleanPwd === "admin-numclick") {
       setRole("admin");
       setIsAdminUnlocked(true);
@@ -491,6 +492,12 @@ export default function App() {
         sessionStorage.setItem("numclick_catuai_admin", "true");
       } catch {}
     } else if (cleanPwd === "catuai2026") {
+      if (showAuthModal && authModalTarget === "admin") {
+        setAuthError(
+          'A senha "catuai2026" é apenas de Leitura. Para ativar o Modo Edição, digite: admin-numclick'
+        );
+        return;
+      }
       setRole("viewer");
       setIsAuthenticated(true);
       setShowAuthModal(false);
@@ -500,7 +507,11 @@ export default function App() {
         sessionStorage.setItem("numclick_catuai_role", "viewer");
       } catch {}
     } else {
-      setAuthError('Senha incorreta. Verifique sua credencial de acesso.');
+      setAuthError(
+        authModalTarget === "admin"
+          ? 'Senha incorreta. Para liberar o Modo Edição, digite: admin-numclick'
+          : "Senha incorreta. Verifique sua credencial de acesso."
+      );
     }
   };
 
@@ -519,6 +530,7 @@ export default function App() {
       } else {
         setAuthError("");
         setPasswordInput("");
+        setAuthModalTarget("admin");
         setShowAuthModal(true);
       }
     }
@@ -701,6 +713,7 @@ export default function App() {
             onClick={() => {
               setAuthError("");
               setPasswordInput("");
+              setAuthModalTarget("any");
               setShowAuthModal(true);
             }}
             className="text-xs bg-slate-800 hover:bg-slate-700 border border-slate-700 px-3 py-1.5 rounded-lg text-slate-200 transition"
@@ -1197,9 +1210,11 @@ export default function App() {
       {showAuthModal && (
         <div className="fixed inset-0 bg-slate-950/60 z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-xl shadow-xl p-5 max-w-sm w-full border border-slate-200">
-            <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center justify-between mb-2">
               <h3 className="font-bold text-slate-900 text-sm">
-                Autenticação de Perfil — NUM CLICK
+                {authModalTarget === "admin"
+                  ? "Liberar Modo Edição (Admin)"
+                  : "Autenticação de Perfil — NUM CLICK"}
               </h3>
               <button
                 onClick={() => setShowAuthModal(false)}
@@ -1208,6 +1223,11 @@ export default function App() {
                 Fechar
               </button>
             </div>
+            {authModalTarget === "admin" && (
+              <p className="text-xs text-slate-600 mb-3">
+                Insira a senha de <strong>Administração</strong> para habilitar os botões de criar, editar e excluir etapas:
+              </p>
+            )}
             <form onSubmit={handleLogin} className="space-y-3">
               <input
                 type="password"
@@ -1216,11 +1236,19 @@ export default function App() {
                   setPasswordInput(e.target.value);
                   if (authError) setAuthError("");
                 }}
-                placeholder="Digite a senha do perfil..."
+                placeholder={
+                  authModalTarget === "admin"
+                    ? "Senha de Admin (admin-numclick)..."
+                    : "Digite a senha do perfil..."
+                }
                 className="w-full text-sm px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:border-slate-600"
                 autoFocus
               />
-              {authError && <p className="text-xs text-rose-600">{authError}</p>}
+              {authError && (
+                <p className="text-xs text-rose-600 bg-rose-50 border border-rose-200 p-2 rounded-lg font-medium">
+                  {authError}
+                </p>
+              )}
               <div className="flex gap-2">
                 <button
                   type="button"
