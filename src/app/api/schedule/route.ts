@@ -36,12 +36,9 @@ const INITIAL_EMPTY_TASKS = [
   },
 ];
 
-const DEFAULT_DB_B64 =
-  "cG9zdGdyZXNxbDovL25lb25kYl9vd25lcjpucGdfMHFSZ2ZNRkZ3eFhpQGVwLWRhd24tZHJlYW0tYWNnMzB0emgtcG9vbGVyLnNhLWVhc3QtMS5hd3MubmVvbi50ZWNoL25lb25kYj9zc2xtb2RlPXJlcXVpcmU=";
-
 function getSql() {
   const fallbackUrl = Buffer.from(
-    "cG9zdGdyZXNxbDovL25lb25kYl9vd25lcjpucGdfMHFSMWZNRkZ3eFhpQGVwLWRhd24tZHJlYW0tYWNnMzB0emgtcG9vbGVyLnNhLWVhc3QtMS5hd3MubmVvbi50ZWNoL25lb25kYj9zc2xtb2RlPXJlcXVpcmU=",
+    "cG9zdGdyZXNxbDovL25lb25kYl9vd25lcjpucGdfMHFSMWZNRGZ3eFhpQGVwLWRhd24tZHJlYW0tYWNnMzB0emgtcG9vbGVyLnNhLWVhc3QtMS5hd3MubmVvbi50ZWNoL25lb25kYj9zc2xtb2RlPXJlcXVpcmU=",
     "base64"
   ).toString("utf-8");
   const dbUrl =
